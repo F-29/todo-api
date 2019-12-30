@@ -1,12 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const mongoose = require('../mongoose-config');
+// const mongoose = require('../mongoose-config');
 const Todo = require('./models/todoModel');
 // const User = require('./models/userModel');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
@@ -22,3 +22,5 @@ app.post('/todos', (req, res) => {
 app.listen(PORT, () => {
     console.log(`server is running on localhost:${PORT}`);
 });
+
+module.exports = app;
