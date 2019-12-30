@@ -8,20 +8,20 @@ let text = "Test Todo API";
 let oldLength = 0;
 
 beforeEach(done => {
+    Todo.find()
+        .then(todos => {
+            oldLength = todos.length;
+            done();
+        })
+        .catch(err => done(err));
+});
+
+afterEach(done => {
     Todo.remove({text})
         .then(() => {
             done();
         })
         .catch(error => done(error));
-});
-
-afterEach(done => {
-    Todo.find()
-        .then(todos => {
-            oldLength = todos.length - 1;
-            done();
-        })
-        .catch(err => done(err));
 });
 
 describe('POST /todos', () => {
@@ -55,7 +55,6 @@ describe('POST /todos', () => {
             .expect(400)
             .end(err => {
                 if (err) {
-                    console.log("{\n" + err + "\n}");
                     return done(err);
                 }
                 Todo.find()
@@ -68,3 +67,29 @@ describe('POST /todos', () => {
     });
 });
 
+describe('GET /todos', () => {
+    it('should fetch all todos', (done) => {
+        helperSeeder();
+        request(app)
+            .get('/todos')
+            .expect(200)
+            .expect(() => {
+                Todo.find()
+                    .then(todos => {
+                        expect(todos.length).toBe(oldLength + 3);
+                    })
+                    .catch(err => done(err));
+            })
+            .end(done);
+    });
+});
+
+
+const helperSeeder = () => {
+    const todos = [
+        {text},
+        {text},
+        {text},
+    ];
+    return Todo.insertMany(todos);
+};
