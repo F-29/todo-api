@@ -20,6 +20,7 @@
     "expect": "^24.9.0",
     "mocha": "^6.2.2",
     "nodemon": "^2.0.2",
+    "randomstring": "^1.1.5",
     "supertest": "^4.0.2"
   }
 }

@@ -1,5 +1,7 @@
 const expect = require('expect');
+const {ObjectID} = require('mongodb');
 const request = require('supertest');
+const randomString = require('randomstring');
 
 const app = require('./../server/server');
 const Todo = require('./../server/models/todoModel');
@@ -84,12 +86,48 @@ describe('GET /todos', () => {
     });
 });
 
+describe('GET /todos/:id', () => {
+    it('should return a specific todo doc', (done) => {
+        helperSeeder();
+        request(app)
+            .get(`/todos/${todos[0]._id}`)
+            .expect(200)
+            .expect(res => {
+                expect(res.body.todo.text).toBe(todos[0].text);
+            })
+            .end(done);
+    });
+    it('should return 404 if todo not found', (done) => {
+        helperSeeder();
+        request(app)
+            .get(`/todos/${new ObjectID()}`)
+            .expect(404)
+            .end(done);
+    });
+    it('should return 404 for non-object ids', (done) => {
+        request(app)
+            .get(`/todos/${randomString.generate(24)}`)
+            .expect(400)
+            .end(done);
+    });
+});
+
+let todos = [];
 
 const helperSeeder = () => {
-    const todos = [
-        {text},
-        {text},
-        {text},
+     todos = [
+        {
+            _id: new ObjectID(),
+            text
+        },
+        {
+            _id: new ObjectID(),
+            text
+        },
+        {
+            _id: new ObjectID(),
+            text
+        },
     ];
     return Todo.insertMany(todos);
 };
