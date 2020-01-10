@@ -6,7 +6,11 @@
   "scripts": {
     "test": "mocha tests/*.test.js",
     "test-watch": "nodemon --exec npm test",
-    "start": "nodemon ./server/server.js"
+    "start": "node ./server/server.js",
+    "run": "nodemon ./server/server.js"
+  },
+  "engines": {
+    "node": "13.1.0"
   },
   "author": "Mosich",
   "license": "MIT",
