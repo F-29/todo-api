@@ -25,7 +25,7 @@ app.get('/todos', (req, res) => {
 });
 
 app.get('/todos/:id', (req, res) => {
-    let id = checkId(req, res);
+    let id = checkAndReturnId(req, res);
 
     Todo.findById(id)
         .then(todo => {
@@ -39,7 +39,7 @@ app.get('/todos/:id', (req, res) => {
 });
 
 app.delete('/todos/:id', (req, res) => {
-    let id = checkId(req, res);
+    let id = checkAndReturnId(req, res);
 
     Todo.findByIdAndRemove(id)
         .then(todo => {
@@ -54,7 +54,9 @@ app.delete('/todos/:id', (req, res) => {
         });
 });
 
-checkId = (req, res) => {
+
+
+checkAndReturnId = (req, res) => {
     let id = req.params.id;
     if (!ObjectID.isValid(id)) {
         return res.status(400).send();
