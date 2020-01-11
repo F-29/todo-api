@@ -112,6 +112,48 @@ describe('GET /todos/:id', () => {
     });
 });
 
+describe('DELETE /todos/:id', () => {
+    it('should remove a todo', (done) => {
+        helperSeeder();
+        let id = todos[1]._id;
+        let text = todos[1].text;
+
+        request(app)
+            .delete(`/todos/${id}`)
+            .expect(200)
+            .expect(res => {
+                expect(res.body.todo.text).toBe(text);
+            })
+            .expect(res => {
+                expect(res.body.todo._id.toString()).toBe(id.toString());
+            })
+            .end((err) => {
+                if (err) {
+                    return done(err);
+                }
+                Todo.findById(id)
+                    .then(todo => {
+                        expect(todo).toBeFalsy();
+                        done();
+                    })
+                    .catch(err => done(err));
+            });
+    });
+    it('should return 404 if todo not found', (done) => {
+        helperSeeder();
+        request(app)
+            .get(`/todos/${new ObjectID()}`)
+            .expect(404)
+            .end(done);
+    });
+    it('should return 400 for non-object ids', (done) => {
+        request(app)
+            .delete(`/todos/${randomString.generate(24)}`)
+            .expect(400)
+            .end(done);
+    });
+});
+
 let todos = [];
 
 const helperSeeder = () => {

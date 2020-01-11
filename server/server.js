@@ -46,7 +46,6 @@ app.delete('/todos/:id', (req, res) => {
             if (!todo) {
                 return res.status(404).send();
             }
-            console.log("removed todo:\n", todo);
             return res.send({todo});
         })
         .catch(e => {
