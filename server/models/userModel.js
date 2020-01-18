@@ -1,4 +1,4 @@
-const mongoose = require('../../mongoose-config');
+const mongoose = require('../../config/mongoose-config');
 
 const UserModel = mongoose.model('User', {
     email: {
