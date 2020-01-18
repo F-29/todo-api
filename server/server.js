@@ -59,10 +59,10 @@ app.patch('/todos/:id', (req, res) => {
     let body = {text: req.body.text, completed: req.body.completed};
 
     if (body.completed === true || body.completed === false && body.completed) {
-        body.completedAt = new Date().getTime();
+        body.completed_at = new Date().getTime();
     } else {
         body.completed = false;
-        body.completed = null;
+        body.completed_at = null;
     }
 
     Todo.findByIdAndUpdate(id, {$set: body}, {new: true})
@@ -71,7 +71,7 @@ app.patch('/todos/:id', (req, res) => {
                 return res.status(404).send();
             }
 
-            return res.status(200).send({todo});
+            return res.status(201).send({todo});
         })
         .catch();
 });

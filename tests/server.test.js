@@ -154,21 +154,71 @@ describe('DELETE /todos/:id', () => {
     });
 });
 
+describe('PATCH /todos/:id', () => {
+    it('should update text', (done) => {
+        helperSeeder();
+        let id = todos[2]._id;
+        request(app)
+            .patch(`/todos/${id}`)
+            .send({text: "Something updated", completed: false})
+            .expect(201)
+            .expect(res => {
+                expect(res.body.todo.text).toBe("Something updated");
+                expect(res.body.todo.completed).toBe(false);
+                expect(res.body.todo.completed_at).toBe(null);
+            })
+            .end(done);
+    });
+    it('should update completed and completed_at', (done) => {
+        helperSeeder();
+        let id = todos[1]._id;
+        request(app)
+            .patch(`/todos/${id}`)
+            .send({completed: true})
+            .expect(201)
+            .expect(res => {
+                expect(res.body.todo.completed).toBe(true);
+                expect(res.body.todo.completed_at).toContain(new Date().getDate());
+                expect(res.body.todo.completed_at).toContain(new Date().getFullYear());
+            })
+            .end(done)
+    });
+    it('should update text and NOT completed', (done) => {
+        helperSeeder();
+        let id = todos[0]._id;
+        let text = "this should be the new text";
+
+        request(app)
+            .patch(`/todos/${id}`)
+            .send({completed: false, text})
+            .expect(201)
+            .expect(res => {
+                expect(res.body.todo.text.toString()).toBe(text);
+                expect(res.body.todo.completed).toBe(false);
+                expect(res.body.todo.completed_at).toBeNull();
+            })
+            .end(done);
+    });
+});
+Debugging
 let todos = [];
 
 const helperSeeder = () => {
      todos = [
         {
             _id: new ObjectID(),
-            text
+            text,
+            completed: false,
         },
         {
             _id: new ObjectID(),
-            text
+            text,
+            completed: false,
         },
         {
             _id: new ObjectID(),
-            text
+            text,
+            completed: false,
         },
     ];
     return Todo.insertMany(todos);
