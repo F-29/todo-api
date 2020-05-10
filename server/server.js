@@ -2,11 +2,13 @@ require("../config/config");
 const express = require('express');
 const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
+const User = require('./models/userModel');
+const _ = require('lodash');
 
 const Todo = require('./models/todoModel');
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
@@ -57,7 +59,7 @@ app.delete('/todos/:id', (req, res) => {
 
 app.patch('/todos/:id', (req, res) => {
     let id = checkAndReturnId(req, res);
-    let body = {text: req.body.text, completed: req.body.completed};
+    let body = _.pick(req.body, ['text', 'completed']);
 
     if (body.completed === true || body.completed === false && body.completed) {
         body.completed_at = new Date().getTime();
@@ -75,6 +77,23 @@ app.patch('/todos/:id', (req, res) => {
             return res.status(201).send({todo});
         })
         .catch();
+});
+
+app.post('/users', (req, res) => {
+    const body = _.pick(req.body, ['email', 'password']);
+    const user = new User(body);
+
+    user
+        .save()
+        .then(user => {
+            return user.generateAuthToken();
+        })
+        .then(token => {
+            res.header('x-auth', token).send(user);
+        })
+        .catch(e => {
+            res.status(400).send(e);
+        });
 });
 
 checkAndReturnId = (req, res) => {
