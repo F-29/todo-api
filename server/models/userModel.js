@@ -50,7 +50,22 @@ UserSchema.methods.generateAuthToken = function () {
 
 UserSchema.methods.toJSON = function () {
     return _.pick(this.toObject(), ['_id', 'email']);
-}
+};
+
+UserSchema.statics.findByToken = function (token) {
+    let decode;
+    try {
+        decode = jwt.verify(token, 'thisIsaSecrete123');
+    } catch (e) {
+        return Promise.reject();
+    }
+
+    return this.findOne({
+        '_id': decode._id,
+        'tokens.token': token,
+        'tokens.access': 'auth'
+    });
+};
 
 const UserModel = mongoose.model('User', UserSchema);
 

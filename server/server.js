@@ -1,11 +1,14 @@
 require("../config/config");
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
-const User = require('./models/userModel');
 const _ = require('lodash');
 
+const User = require('./models/userModel');
 const Todo = require('./models/todoModel');
+
+const authenticate = require('./middlewares/authenticate');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -94,6 +97,10 @@ app.post('/users', (req, res) => {
         .catch(e => {
             res.status(400).send(e);
         });
+});
+
+app.get('/todos/users/me', authenticate, (req, res) => {
+    res.send(req.user);
 });
 
 checkAndReturnId = (req, res) => {
